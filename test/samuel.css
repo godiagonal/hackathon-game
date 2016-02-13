@@ -1,0 +1,7 @@
+html, body {
+	font-family: 'Open Sans', sans-serif;
+}
+
+.button.active {
+    background: #6fd66a;
+}
