@@ -1,18 +1,32 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
-    <title>Game</title>
+    <title>Best Game</title>
+    <link type="text/css" rel="stylesheet" href="css/main.css" />
     <script src="js/firebase.js"></script>
     <script src="js/jquery-1.12.0.min.js"></script>
     <script src="js/main.js"></script>
 </head>
+
 <body>
 
-
-<input class="user-name" type="text">
-<button class="register">Join game</button>
-<button class="play" disabled>The master switch</button>
+    <div class="register-form">
+        <input class="user-name" type="text">
+        <button class="register">Join best game</button>
+    </div>
+    
+    <div class="game-container">
+        <div class="hint">It's your turn!</div>
+        <button class="play" disabled>Play best game</button>
+    </div>
+    
+    <div class="game-info">
+        Player queue:
+        <ul class="queue"></ul>
+    </div>
 
 </body>
+
 </html>

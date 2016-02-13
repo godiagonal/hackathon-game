@@ -1,0 +1,25 @@
+* {
+	font-family: 'Open Sans', sans-serif;
+}
+
+.register-form {
+    display: block;
+}
+
+.game-container {
+    display: none;
+}
+
+    .game-container .hint {
+        color: #74c370;
+        display: none;
+    }
+
+    .game-container.active .hint {
+        display: block;
+    }
+
+.game-info {
+    display: none;
+    margin-top: 100px;
+}
