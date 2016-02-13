@@ -1,5 +1,6 @@
 var ref = new Firebase('https://hackatonspel.firebaseio.com/')
     , $html = $('html')
+    , isRegistered = false
     , $button
     ;
 
@@ -12,9 +13,11 @@ $(function () {
         var $input = $('input.user-name')
             , userName = $input.val();
 
-        getHighestPriority( function(priority) {
-            registerUser(userName, priority + 1);
-        });
+        if(!isRegistered) {
+            getHighestPriority( function(priority) {
+                registerUser(userName, priority + 1);
+            });
+        }
 
     });
 
@@ -32,8 +35,6 @@ $(function () {
         }
 
     });
-
-
 
 });
 
@@ -78,9 +79,7 @@ function getHighestPriority(callback) {
         if(snapshot.exists()) {
             var lastPlayerId = getUserIdFromSnapshot(snapshot);
             userRef(lastPlayerId).once('value', function (snap) {
-
                 callback(snap.getPriority());
-
             });
         } else {
             callback(0);
@@ -118,7 +117,6 @@ function usersRef() {
 }
 
 function firstUserRef() {
-    console.log('1');
     return ref.child('users').orderByPriority().limitToFirst(1);
 }
 
@@ -132,21 +130,19 @@ function lastUserRef() {
  */
 function registerUser(userName, priority) {
 
-    if( !getMyUserId() ) {
-        ref.authAnonymously(function(error, authData) {
+    ref.authAnonymously(function(error, authData) {
 
-            if(error) return error;
+        if(error) return error;
 
-            // Creates a user with username and priority.
-            userRef(authData.uid).setWithPriority({ username: userName }, priority );
+        // Creates a user with username and priority.
+        userRef(authData.uid).setWithPriority({ username: userName }, priority );
 
-            // Listener that removes the user on its disconnection.
-            userRef(authData.uid).onDisconnect().remove();
+        // Listener that removes the user on its disconnection.
+        userRef(authData.uid).onDisconnect().remove();
 
-        });
-    } else {
-        updateUser(userName);
-    }
+        isRegistered = true;
+
+    });
 
 }
 
