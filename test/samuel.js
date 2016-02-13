@@ -1,39 +1,66 @@
-var ref = new Firebase('https://hackatonspel.firebaseio.com/');
+var ref = new Firebase('https://hackatonspel.firebaseio.com/')
+    , $html = $('html')
+    , $button;
 
 $(function () {
-    $('#btn-master').click(makeMove);
+    
+    $html.on('click', '#btn-master', makeMove);
+    $button = $('#btn-master');
+
+    firstUserRef().on('value', function (snapshot) {
+
+        var currentPlayerId = getUserIdFromSnapshot(snapshot);
+        var myId = getMyUserId();
+
+        if (myId === currentPlayerId) {
+            $button.addClass('active').removeAttr('disabled');
+        }
+        else {
+            $button.removeClass('active').attr('disabled', true);
+        }
+
+        console.log('Current: ' + currentPlayerId);
+        console.log('Me: ' + myId);
+
+    });
+    
 });
 
-firstUserRef().on('value', function (snapshot) {
+function setPriority(prio) {
 
-    var currentPlayerId = getUserIdFromSnapshot(snapshot);
-    var myId = ref.getAuth().uid;
+    var myId = getMyUserId();
 
-    $('#btn-master').removeClass('active');
-    $('#btn-master').attr('disabled', true);
+    userExists(myId, function () {
+        userRef(myId).setPriority(prio);
+    });
 
-    if (myId === currentPlayerId) {
-        $('#btn-master').addClass('active');
-        $('#btn-master').removeAttr('disabled');
-    }
+}
 
-    console.log('Current: ' + currentPlayerId);
-    console.log('Me: ' + myId);
+function makeMove() {
+    setPriorityToHighest();
+}
 
-});
+function setPriorityToHighest() {
 
-function setPlayer(id, prio) {
+    var myId = getMyUserId();
 
-    usersRef().once('value', function (snapshot) {
+    userExists(myId, function () {
 
-        if (snapshot.child(id).exists())
-            userRef(id).setPriority(prio);
+        console.log('YAY, I exist!');
+
+        getHighestPriority(function (prio) {
+
+            console.log('Highest prio: ' + prio);
+
+            userRef(myId).setPriority(prio + 1);
+
+        });
 
     });
 
 }
 
-function setPriorityToLast() {
+function getHighestPriority(callback) {
 
     lastUserRef().once('value', function (snapshot) {
 
@@ -41,25 +68,36 @@ function setPriorityToLast() {
 
         userRef(lastPlayerId).once('value', function (snap) {
 
-            var myId = ref.getAuth().uid;
-
-            userRef(myId).setPriority(snap.getPriority() + 1);
+            callback(snap.getPriority());
 
         });
 
     });
-    
+
 }
 
-function makeMove() {
+function userExists(id, callback) {
 
-    setPriorityToLast();
+    usersRef().once('value', function (snapshot) {
 
+        if (snapshot.child(id).exists())
+            callback();
+
+    });
+
+}
+
+function getMyUserId() {
+    return ref.getAuth().uid;
 }
 
 function getUserIdFromSnapshot(snapshot) {
     return Object.keys(snapshot.val())[0];
 }
+
+
+
+
 
 function userRef(id) {
     return ref.child('users/' + id);
@@ -76,3 +114,4 @@ function firstUserRef() {
 function lastUserRef() {
     return ref.child('users').orderByPriority().limitToLast(1);
 }
+
