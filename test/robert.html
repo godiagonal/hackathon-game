@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Title</title>
+  <script src="../js/firebase.js"></script>
+  <script src="../js/jquery-1.12.0.min.js"></script>
+</head>
+<body>
+
+
+<input type="text">
+
+<button>Join game</button>
+
+<script>
+  var ref = new Firebase("https://hackatonspel.firebaseio.com/");
+
+
+
+  $('button').on("click", registerUser);
+
+
+
+  function registerUser(){
+
+    ref.authAnonymously(function(error, authData) {
+      if (error) {
+        console.log("Login Failed!", error);
+      } else {
+        console.log("Authenticated successfully with payload:", authData);
+
+        var userName = $('input').val();
+
+        ref.child("users/" + authData.uid).set({
+          username: userName
+        })
+
+
+
+
+      }
+    });
+
+
+  }
+
+
+
+
+
+</script>
+
+
+
+</body>
+</html>
