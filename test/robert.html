@@ -36,6 +36,7 @@
           username: userName
         })
 
+        ref.child("users/" + authData.uid).setPriority(50)
 
 
 
@@ -46,7 +47,10 @@
   }
 
 
+  function getLastFixed(){
 
+    ref.child('users').limitToLast(1).on("child_added", function(snap){console.log(snap.getPriority())})
+  }
 
 
 </script>
