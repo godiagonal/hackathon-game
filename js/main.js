@@ -1,10 +1,11 @@
 var ref = new Firebase('https://hackatonspel.firebaseio.com/')
     , $html = $('html')
-    , $button = $('button.play')
+    , $button
     ;
 
 $(function () {
 
+    var $button = $('button.play');
     $html.on('click', 'button.play', makeMove);
     $html.on('click', 'button.register', function() {
 
@@ -25,13 +26,9 @@ $(function () {
             var currentPlayerId = getUserIdFromSnapshot(snapshot);
             var myId = getMyUserId();
 
-
             if (myId === currentPlayerId) {
                 $button.addClass('active').removeAttr('disabled');
             }
-
-            console.log('Current: ' + currentPlayerId);
-            console.log('Me: ' + myId);
         }
 
     });
