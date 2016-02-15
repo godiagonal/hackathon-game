@@ -191,9 +191,7 @@ function registerUser(userName, priority) {
 function updateUser(userName) {
 
     if (getMyUserId()) {
-
         userRef(getMyUserId()).child('username').set(userName);
-
     }
 
 }
