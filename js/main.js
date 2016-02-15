@@ -9,32 +9,41 @@ var ref = new Firebase('https://hackatonspel.firebaseio.com/'),
 
 $(function () {
 
-    $registerForm = $('div.register-form');
-    $gameContainer = $('div.game-container');
-    $gameInfo = $('div.game-info');
-    $playButton = $('button.play');
-    $queue = $('ul.queue');
-    
+    $registerForm   = $('div.register-form');
+    $gameContainer  = $('div.game-container');
+    $gameInfo       = $('div.game-info');
+    $playButton     = $('button.play');
+    $queue          = $('ul.queue');
+
+    /**
+     * Event handler for play button.
+     */
     $html.on('click', 'button.play', function () {
+        // TODO: make sure user is in the front of the queue
         setPriorityToHighest();
     });
-    
+
+    /**
+     * Event handler for register button.
+     */
     $html.on('click', 'button.register', function () {
 
-        var $input = $('input.user-name'),
+        var $input   = $('input.user-name'),
             userName = $input.val();
 
         if (!isRegistered) {
             getHighestPriority(function (priority) {
                 registerUser(userName, priority + 1);
             });
-        }
-        else {
+        } else {
             updateUser(userName);
         }
 
     });
 
+    /**
+     * Listener for first user in the queue.
+     */
     firstUserRef().on('value', function (snapshot) {
 
         $gameContainer.removeClass('active');
@@ -45,6 +54,7 @@ $(function () {
             var currentPlayerId = getUserIdFromSnapshot(snapshot);
             var myId = getMyUserId();
 
+            // Current player is in front of the queue.
             if (myId === currentPlayerId) {
                 $gameContainer.addClass('active');
                 $playButton.removeAttr('disabled');
@@ -54,13 +64,16 @@ $(function () {
 
     });
 
+    /**
+     * Listener for when the users table is updated.
+     */
     usersRef().on('value', function (snapshot) {
 
+        // Rebuild the queue ui.
         $queue.empty();
+        snapshot.forEach(function (child) {
 
-        snapshot.forEach(function (childSnapshot) {
-
-            $('<li />').html(childSnapshot.val().username).appendTo($queue);
+            $('<li />').html(child.val().username).appendTo($queue);
 
         });
 
